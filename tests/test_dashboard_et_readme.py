@@ -3,17 +3,31 @@
 Aucune donnée de marché requise : tout est lu dans results/ (versionné)."""
 import importlib.util
 import json
+import os
 import re
+import subprocess
+import sys
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pytest
 
 RACINE = Path(__file__).resolve().parents[1]
 DOCS = RACINE / "docs"
 RESULTATS = RACINE / "results"
 GABARIT = RACINE.parent / "_outils" / "dashboard" / "index.html"
 USD_PAR_PIP_LOT, CAPITAL_REF_USD = 100.0, 100e6
+# dossiers que les parcours d'hygiène ne regardent jamais : environnements virtuels, caches, compilations, données locales
+IGNORES = {"__pycache__", ".pytest_cache", "histdata", ".git", "_rapide", ".venv", "venv", "env", "build", "dist", "node_modules",
+           "site-packages", ".ipynb_checkpoints", ".mypy_cache", ".ruff_cache"}
+DASHBOARD = "fx-market-making-simulator"  # la seule page GitHub Pages valide du dépôt
+
+
+def _fichiers_du_depot(racine=RACINE):
+    for p in racine.rglob("*"):
+        if p.is_file() and not (set(p.relative_to(racine).parts) & IGNORES):
+            yield p
 
 
 def _json(chemin: Path) -> dict:
@@ -93,14 +107,75 @@ def test_les_readme_de_dossier_citent_tous_les_fichiers():
 
 
 def test_aucun_chemin_absolu_de_machine_dans_le_depot():
-    """Pas de chemin absolu de machine (lecteur, puis dossier Users) dans le code, les notebooks, les README et les résultats."""
+    """Pas de chemin absolu de machine (lecteur, puis dossier Users) dans le code, les notebooks, les README et les résultats ; un `.venv` local est ignoré."""
     motif = re.compile(r"[A-Za-z]:[\\/]+Users")
     exclus = {"test_dashboard_et_readme.py"}
-    fautifs = []
-    for p in RACINE.rglob("*"):
-        if (not p.is_file() or p.name in exclus or p.suffix not in {".py", ".md", ".json", ".ipynb", ".yml", ".txt", ".csv", ".js", ".html"}
-                or any(x in p.parts for x in ("__pycache__", ".pytest_cache", "histdata", ".git", "_rapide"))):
-            continue
-        if motif.search(p.read_text(encoding="utf-8", errors="ignore")):
-            fautifs.append(str(p.relative_to(RACINE)))
+    suffixes = {".py", ".md", ".json", ".ipynb", ".yml", ".txt", ".csv", ".js", ".html"}
+    fautifs = [str(p.relative_to(RACINE)) for p in _fichiers_du_depot()
+               if p.name not in exclus and p.suffix in suffixes and motif.search(p.read_text(encoding="utf-8", errors="ignore"))]
     assert not fautifs, fautifs
+
+
+def test_hygiene_ignore_les_environnements_virtuels(tmp_path):
+    """Un `.venv` posé dans le dépôt (geste standard d'un développeur) ne doit rien déclencher."""
+    for sous in (".venv/Lib/site-packages", "venv/lib", "build", ".git", "mm"):
+        (tmp_path / sous).mkdir(parents=True)
+        (tmp_path / sous / "x.py").write_text("C:" + "/Users/x", encoding="utf-8")  # chemin absolu fictif, construit pour ne pas figurer tel quel dans le dépôt
+    assert [p.relative_to(tmp_path).parts[0] for p in _fichiers_du_depot(tmp_path)] == ["mm"]
+
+
+def test_details_identique_a_ce_que_genere_le_script():
+    texte = (DOCS / "details.md").read_text(encoding="utf-8").replace("\r\n", "\n")
+    assert texte == _module("generer_readme").construire_details(), "docs/details.md périmé : relancer scripts/generer_readme.py"
+
+
+def test_readme_court_avec_premier_ecran_complet():
+    lignes = (RACINE / "README.md").read_text(encoding="utf-8").replace("\r\n", "\n").splitlines()
+    tete = "\n".join(lignes[:45])
+    assert len(lignes) <= 400, f"README de {len(lignes)} lignes : le détail va dans docs/details.md"
+    assert "## Résultats clés" in tete and "figures/hero_equity.png" in tete
+    assert "actions/workflows/tests.yml/badge.svg" in tete, "badge CI vivant attendu"
+    assert "tests-" not in tete, "plus de badge statique de nombre de tests"
+    assert "## Comment ce projet a été construit" in lignes
+    assert (RACINE / ".gitattributes").is_file()
+
+
+def test_tableaux_de_plus_de_7_colonnes_repliés_dans_details():
+    ouverts, larges = 0, []
+    for n, ligne in enumerate((RACINE / "README.md").read_text(encoding="utf-8").splitlines(), 1):
+        if ligne.startswith("<details"):
+            ouverts += 1
+        elif ligne.startswith("</details"):
+            ouverts -= 1
+        elif ligne.startswith("|") and not ouverts and ligne.count("|") - 1 > 7:
+            larges.append(n)
+    assert not larges, f"tableaux de plus de 7 colonnes hors <details>, lignes {larges}"
+
+
+def test_aucun_lien_de_tableau_de_bord_inexistant():
+    fautifs = []
+    for p in _fichiers_du_depot():
+        if p.suffix in {".md", ".py", ".yml"}:
+            for page in re.findall(r"yassine-ek\.github\.io/([\w-]+)", p.read_text(encoding="utf-8", errors="ignore")):
+                if page != DASHBOARD:
+                    fautifs.append(f"{p.relative_to(RACINE)} : {page}")
+    assert not fautifs, fautifs
+    assert f"https://yassine-ek.github.io/{DASHBOARD}/" in (RACINE / "README.md").read_text(encoding="utf-8")
+
+
+def test_nombre_de_tests_annonce_dans_les_details_exact():
+    sortie = subprocess.run([sys.executable, "-m", "pytest", "--collect-only", "-q"], cwd=RACINE, capture_output=True, text=True).stdout
+    n = int(re.search(r"(\d+) tests? collected", sortie).group(1))
+    assert n == _module("generer_readme").N_TESTS, f"{n} tests collectés : mettre à jour N_TESTS dans scripts/generer_readme.py puis régénérer"
+
+
+def test_donnees_absentes_message_clair_sans_trace_brute(tmp_path, monkeypatch):
+    from mm.donnees import DonneesManquantes, charger_annee, verifier_donnees
+    monkeypatch.setenv("HISTDATA_DIR", str(tmp_path))
+    for appel in (lambda: charger_annee(2019), lambda: verifier_donnees([2019, 2020])):
+        with pytest.raises(DonneesManquantes) as e:
+            appel()
+        assert "histdata.com" in str(e.value) and "HISTDATA_DIR" in str(e.value) and "EURUSD_2019.zip" in str(e.value)
+    env = {**os.environ, "HISTDATA_DIR": str(tmp_path), "PYTHONIOENCODING": "utf-8"}
+    r = subprocess.run([sys.executable, str(RACINE / "scripts" / "exporter_pnl_rejeu.py")], env=env, capture_output=True, text=True, encoding="utf-8")
+    assert r.returncode != 0 and "Traceback" not in r.stderr and "histdata.com" in r.stderr, r.stderr

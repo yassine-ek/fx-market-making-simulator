@@ -25,7 +25,7 @@ import pandas as pd  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
 
 from mm.figures import COULEURS  # noqa: E402
-from mm.variantes_rejeu import CODE_STRATEGIE, FIN_SELECTION, LIBELLE_CONVENTION, USD_PAR_PIP_LOT  # noqa: E402
+from mm.variantes_rejeu import CAPITAL_REF_USD, CODE_STRATEGIE, FIN_SELECTION, LIBELLE_CONVENTION, USD_PAR_PIP_LOT  # noqa: E402
 
 RESULTATS, FIGURES = RACINE / "results", RACINE / "figures"
 DPI = 130
@@ -74,8 +74,10 @@ def _base(variantes):
 
 
 def hero(verdict, variantes, pnl):
+    """Figure héro lisible une fois réduite : 2 panneaux, 10 x 5,8 pouces, aucun texte sous 11 pt, titre court."""
     base = _base(variantes)
-    fig, (ax, ax2) = plt.subplots(2, 1, figsize=(11, 6.8), sharex=True, gridspec_kw={"height_ratios": [3, 1.3], "hspace": 0.06})
+    capital_musd = CAPITAL_REF_USD / 1e6  # capital de référence ARBITRAIRE du tableau de bord
+    fig, (ax, ax2) = plt.subplots(2, 1, figsize=(10, 5.8), sharex=True, gridspec_kw={"height_ratios": [3, 1.3], "hspace": 0.08})
     debut, fin = pnl.index[0] - pd.Timedelta(days=1), pnl.index[-1]
     _zones(ax, debut, fin)
     _zones(ax2, debut, fin)
@@ -83,22 +85,27 @@ def hero(verdict, variantes, pnl):
     for v in base:
         modele = MODELE_STRATEGIE[v["id"].split("-")[0]]
         c = cumul_musd(pnl, v["id"])
-        ax.plot(c.index, c.values, color=COULEURS[modele], lw=2.0, label=f"{v['strategie']} (Sharpe {f2(v['sharpe'])})")
-        ax2.plot(c.index, drawdown_musd(c).values, color=COULEURS[modele], lw=1.4)
+        ax.plot(c.index, c.values, color=COULEURS[modele], lw=2.2, label=f"{v['strategie']} (Sharpe {f2(v['sharpe'])})")
+        ax2.plot(c.index, drawdown_musd(c).values, color=COULEURS[modele], lw=1.6)
         finaux.append(c.iloc[-1])
     ax.axhline(0, color="0.2", lw=0.8)
-    ax.set_ylabel("PnL cumulé net (M USD)")
+    ax.set_ylim(min(finaux) * 1.15, -min(finaux) * 0.17)  # un peu de place au-dessus de zéro pour les étiquettes de période
+    ax.set_ylabel("PnL cumulé net (M USD)", fontsize=12)
+    ax.tick_params(labelsize=11)
     ax.grid(alpha=0.3)
-    ax.legend(loc="lower left", fontsize=9, title="Sharpe annualisé du rejeu", title_fontsize=9)
+    ax.legend(loc="lower left", fontsize=11, title="Sharpe annualisé du rejeu", title_fontsize=11)
     trans = ax.get_xaxis_transform()
     fin_sel = pd.Timestamp(FIN_SELECTION)
-    ax.text(debut + (fin_sel - debut) / 2, 0.97, "2019-2020 : période de sélection\ndu tableau de bord", transform=trans, ha="center", va="top", fontsize=9)
-    ax.text(fin_sel + (fin - fin_sel) / 2, 0.97, "2021-2022 : période d'évaluation\n(rejeu VAL, TEST 2023+ scellé)", transform=trans, ha="center", va="top", fontsize=9)
-    ax.text(0.99, 0.78, f"cumul final : de {f2(min(finaux))} à {f2(max(finaux))} M USD", transform=ax.transAxes, ha="right", fontsize=9, color="0.25")
-    ax2.set_ylabel("drawdown (M USD)")
+    ax.text(debut + (fin_sel - debut) / 2, 0.98, "2019-2020 : sélection", transform=trans, ha="center", va="top", fontsize=11)
+    ax.text(fin_sel + (fin - fin_sel) / 2, 0.98, "2021-2022 : évaluation", transform=trans, ha="center", va="top", fontsize=11)
+    ax.text(0.99, 0.80, f"cumul final : de {f2(min(finaux))} à {f2(max(finaux))} M USD\n"
+            f"≈ {f2(min(finaux) / capital_musd * 100, 0)} % du capital de référence\n(arbitraire : {capital_musd:.0f} M USD)",
+            transform=ax.transAxes, ha="right", va="top", fontsize=11, color="0.25")
+    ax2.set_ylabel("drawdown (M USD)", fontsize=12)
+    ax2.tick_params(labelsize=11)
     ax2.grid(alpha=0.3)
-    fig.suptitle("Rejeu VAL 2019-2022 sur EURUSD 1 minute réel : PnL cumulé NET de frais, cas de base, 5 stratégies", fontsize=12.5, y=0.985)
-    ax.set_title(ligne_frais(verdict), fontsize=8.6, color="0.25", pad=6)
+    fig.suptitle("Rejeu EURUSD 1 min, VAL 2019-2022 : PnL cumulé net", fontsize=13.5, y=0.995)
+    ax.set_title("5 stratégies, cas de base (fill probabiliste, côté perdant seul)", fontsize=11, color="0.25", pad=6)
     fig.savefig(FIGURES / "hero_equity.png", dpi=DPI, bbox_inches="tight")
     plt.close(fig)
 

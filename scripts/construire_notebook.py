@@ -218,9 +218,9 @@ md("""
 
 **Intuition.** On rejoue les stratégies sur les vraies barres EURUSD : cotes causales autour du close précédent, exécution
 seulement si la barre suivante *traverse* la cote. Trois modèles de fill (toucher / traverser de 0,1 pip / traverser avec
-probabilité de file $f=0{,}5$) et deux lectures du cas « bid ET ask touchés » (seul le côté perdant, ou les deux).
+probabilité de file $f=0{,}5$) et deux lectures du cas « bid ET ask touchés » (seul le côté perdant, choisi avec le close de la barre : pessimiste a posteriori, ou les deux).
 
-**Attente.** Bien moins bon que la simulation : une barre de 1 minute bouge de ~2,5 pips, soit 15 demi-spreads, donc nos
+**Attente.** Bien moins bon que la simulation : une barre de 1 minute bouge d'environ 2 pips (1,9 sur VAL, 2,55 avec le σ de TRAIN du simulateur), soit 11 à 15 demi-spreads, donc nos
 cotes sont systématiquement traversées *dans le sens de la tendance*. C'est l'équivalent d'une latence de 60 s.
 """)
 

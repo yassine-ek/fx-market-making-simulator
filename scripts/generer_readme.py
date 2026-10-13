@@ -1,8 +1,8 @@
-"""Assemble README.md à partir de scripts/modele_readme.md et de results/*.json.
+"""Assemble README.md et docs/details.md à partir de scripts/modele_readme.md, scripts/modele_details.md et de results/*.json.
 
-Chaque `<<cle>>` du modèle est remplacé par un chiffre ou un tableau lu dans les résultats : le README ne peut pas
+Chaque `<<cle>>` des modèles est remplacé par un chiffre ou un tableau lu dans les résultats : le README ne peut pas
 contredire les résultats (relancer ce script après run_all.py ou exporter_pnl_rejeu.py). Décimales à la française.
-Les blocs de tête (frais, métriques, « overfit ou pas ? », 30 variantes) viennent de `generer_readme_tete.py`.
+Les blocs de tête (résultats clés, frais, métriques, « overfit ou pas ? », 30 variantes) viennent de `generer_readme_tete.py`.
 
 Usage : python scripts/generer_readme.py
 """
@@ -16,11 +16,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import generer_readme_tete as tete  # noqa: E402
 from generer_readme_tete import fr, ic, tableau  # noqa: E402
 
-N_TESTS = 63  # nombre de tests de la suite complète (badge et section « Validation et tests ») : à mettre à jour avec pytest
+N_TESTS = 70  # tests collectés par pytest (section « Validation et tests » de docs/details.md) : un test vérifie ce nombre
 
 
-def construire() -> str:
-    """Texte complet du README (rien n'est écrit sur le disque)."""
+def _valeurs() -> dict:
+    """Tous les marqueurs `<<cle>>` des modèles, lus dans results/ ; vérifie au passage les affirmations qualitatives du texte."""
     v, variantes = tete.charger()
     mc, rj = v["monte_carlo"], v["rejeu_val"]
     noms = list(mc)
@@ -41,12 +41,19 @@ def construire() -> str:
     pk = [x for ligne in sens["sharpe_AS_p_adverse_x_k_reel"]["sharpe"] for x in ligne]
 
     valeurs = {
+        "bloc_cles": tete.bloc_cles(v, variantes),
         "bloc_tete": tete.bloc_tete(v, variantes),
         "bloc_overfit": tete.overfit_30s(v, variantes),
         "bloc_variantes": tete.bloc_variantes(v, variantes),
+        "bloc_frais_complets": tete.encadre_frais(v, variantes),
         "n_tests": str(N_TESTS),
         "sigma": fr(v["calibration"]["sigma_session_londres_pips_par_racine_s"], 3),
         "sigma_minute": fr(v["calibration"]["sigma_session_londres_pips_par_racine_s"] * 60 ** 0.5, 2),
+        # σ de minute mesuré sur les barres VAL (celui du contrôle marche aléatoire) et nombre de demi-spreads par barre, avec les deux σ
+        "demis_val": fr(ctl["sigma_minute_pips"] / v["hypotheses"]["placebo_demi_spread_moyen_pips"], 0),
+        "demis_train": fr(v["calibration"]["sigma_session_londres_pips_par_racine_s"] * 60 ** 0.5 / v["hypotheses"]["placebo_demi_spread_moyen_pips"], 0),
+        "ratio_sigma": fr(v["calibration"]["sigma_session_londres_pips_par_racine_s"] * 60 ** 0.5 / ctl["sigma_minute_pips"], 2),
+        "ratio_gamma": fr(strat[noms[3]]["gamma"] / strat[noms[1]]["gamma"], 0),
         "n_sessions": f"{v['meta']['n_sessions_monte_carlo']:,}".replace(",", " "),
         "n_sessions_sens": str(v["meta"]["n_sessions_sensibilites"]),
         "n_jours": str(v["hypotheses"]["rejeu"]["n_jours"]),
@@ -75,7 +82,7 @@ def construire() -> str:
              for ms, lig in zip(sens["sharpe_vs_latence"]["latence_ms"], sens["sharpe_vs_latence"]["sharpe"])]),
         "table_fill": tableau(
             ["modèle de fill (traversée, f)", "bid ET ask touchés"] + [court[n] for n in noms],
-            [[f"{m} ({fr(seuil_f[m][0], 1)} pip, f = {fr(seuil_f[m][1], 2)})", "seul le côté perdant (pessimiste)" if r == "adverse" else "les deux côtés (optimiste)"]
+            [[f"{m} ({fr(seuil_f[m][0], 1)} pip, f = {fr(seuil_f[m][1], 2)})", "seul le côté perdant, choisi avec le close de la barre (pessimiste a posteriori)" if r == "adverse" else "les deux côtés (optimiste)"]
              + [fr(modeles[m][r][n]["sharpe_annualise"]) for n in noms]
              for m in modeles for r in ("adverse", "deux_cotes")]),
         "table_rejeu_base": tableau(
@@ -120,6 +127,9 @@ def construire() -> str:
         "modele_base_nom": f"{modele_base} (traversée >= {fr(seuil_f[modele_base][0], 1)} pip, f = {fr(seuil_f[modele_base][1], 2)})",
         "cumul_haut": tete.musd(max(cumuls)),
         "cumul_bas": tete.musd(min(cumuls)),
+        "cumul_haut_pct": tete.pct_ref(max(cumuls), variantes),
+        "cumul_bas_pct": tete.pct_ref(min(cumuls), variantes),
+        "capital_ref": fr(variantes["meta"]["capital_reference_usd"] / 1e6, 0),
         "inv_naif": fr(mc[noms[0]]["inventaire_max_moyen"]),
         "inv_as": fr(mc[noms[1]]["inventaire_max_moyen"]),
         "inv_glft": fr(mc[noms[3]]["inventaire_max_moyen"]),
@@ -138,6 +148,15 @@ def construire() -> str:
     valeurs["as_lat_1s"] = fr(sh_L["sharpe"][sh_L["latence_ms"].index(1000.0)][1])
     valeurs["as_lat_60s"] = fr(sh_L["sharpe"][-1][1])
     valeurs["as_p0"] = fr(sens["sharpe_vs_p_adverse"]["sharpe"][0][1])
+    valeurs["as_p02_sens"] = fr(sens["sharpe_vs_p_adverse"]["sharpe"][sens["sharpe_vs_p_adverse"]["p"].index(0.2)][1])
+    valeurs["glft_p02_sens"] = fr(sens["sharpe_vs_p_adverse"]["sharpe"][sens["sharpe_vs_p_adverse"]["p"].index(0.2)][3])
+    valeurs["n_sessions_mc_sens"] = valeurs["n_sessions_sens"]
+    # version anglaise (point décimal) des plages de Sharpe, pour le bloc « At a glance »
+    en = lambda x: fr(x).replace(",", ".")  # noqa: E731
+    sh_sim = [m["sharpe_annualise"] for m in mc.values()]
+    sh_var = [x["sharpe"] for x in variantes["variantes"]]
+    valeurs["sh_min_en"], valeurs["sh_max_en"] = "+" + en(min(sh_sim)), "+" + en(max(sh_sim))
+    valeurs["rj_var_min_en"], valeurs["rj_var_max_en"] = en(min(sh_var)), en(max(sh_var))
     valeurs["as_p04"] = fr(sens["sharpe_vs_p_adverse"]["sharpe"][-1][1])
     valeurs["rj_pnl_jour"] = fr(base_rejeu[noms[0]]["pnl_moyen_pips_lot"], 0)
     valeurs["pla_pnl_ref_adv"] = fr(placebo["adverse"]["pnl_moyen_jour_ref"], 0)
@@ -167,20 +186,36 @@ def construire() -> str:
     g = sens["sharpe_AS_latence_x_gamma"]
     assert all(x < 0 for x in g["sharpe"][g["latence_ms"].index(1000.0)]) and g["sharpe"][0][-1] > g["sharpe"][0][0], "texte : latence x gamma"
 
+    return valeurs
+
+
+def _rendre(nom_modele: str) -> str:
+    valeurs = _valeurs()
+
     def remplacer(m):
         cle = m.group(1)
         if cle not in valeurs:
-            raise KeyError(f"placeholder inconnu dans le modèle : <<{cle}>>")
+            raise KeyError(f"placeholder inconnu dans {nom_modele} : <<{cle}>>")
         return valeurs[cle]
 
-    modele = (RACINE / "scripts" / "modele_readme.md").read_text(encoding="utf-8")
+    modele = (RACINE / "scripts" / nom_modele).read_text(encoding="utf-8")
     return re.sub(r"<<(\w+)>>", remplacer, modele)
 
 
+def construire() -> str:
+    """Texte complet du README (rien n'est écrit sur le disque)."""
+    return _rendre("modele_readme.md")
+
+
+def construire_details() -> str:
+    """Texte complet de docs/details.md : méthode, résultats détaillés, tests, positionnement (rien n'est écrit sur le disque)."""
+    return _rendre("modele_details.md")
+
+
 def main() -> None:
-    texte = construire()
-    (RACINE / "README.md").write_bytes(texte.replace("\r\n", "\n").encode("utf-8"))  # LF, même sous Windows
-    print("README.md écrit,", len(texte), "caractères")
+    for chemin, texte in ((RACINE / "README.md", construire()), (RACINE / "docs" / "details.md", construire_details())):
+        chemin.write_bytes(texte.replace("\r\n", "\n").encode("utf-8"))  # LF, même sous Windows
+        print(f"{chemin.relative_to(RACINE)} écrit,", len(texte), "caractères")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-"""Exporte le tableau de bord interactif (gabarit commun projets_cv/_outils/dashboard) dans docs/.
+"""Exporte le tableau de bord interactif (gabarit commun des tableaux de bord du portfolio, copié dans docs/index.html) dans docs/.
 
 Lit UNIQUEMENT des fichiers de results/ (aucune donnée de marché requise, donc exécutable en CI) :
   - results/rejeu_pnl_quotidien.csv          PnL quotidien NET des 30 variantes du rejeu VAL 2019-2022 (pips x lot)
@@ -55,7 +55,8 @@ def texte_frais(verdict: dict) -> str:
     return (f"Frais d'exécution {_fr(h['frais'])} pip par exécution et demi-spread de liquidation {_fr(h['demi_spread_marche'], 2)} pip "
             f"(hypothèses, aucune donnée d'ordres), PnL net déjà déduit de ces coûts ; 1 pip × 1 lot (1 M EUR) = 100 USD. "
             f"Rejeu sur barres EURUSD 1 minute HistData (prix BID, heure de New York), demi-spread de marché {_fr(h['demi_spread_marche'], 2)} pip ajouté, "
-            f"cote de la minute i calculée sur le close de i-1 (latence implicite de 60 s). Hypothèses du simulateur, non utilisées ici : "
+            f"cote de la minute i calculée sur le close de i-1 (latence implicite de 60 s). « Côté perdant seul » : quand bid et ask sont touchés dans la même barre, "
+            f"le côté exécuté est choisi avec le close de la barre, un choix pessimiste fait a posteriori et non un fill réaliste. Hypothèses du simulateur, non utilisées ici : "
             f"A = {_fr(h['A'], 2)} /s, k = {_fr(h['k'], 1)}, p = {_fr(h['p_adverse'], 2)}, α = {_fr(h['alpha'], 2)} pip. "
             f"Rendement quotidien = PnL net en USD / {CAPITAL_REF_USD / 1e6:.0f} M USD (capital de référence arbitraire : il change l'échelle des "
             f"courbes et des drawdowns en %, jamais le Sharpe). TRAIN ≤ 2018 sert uniquement à calibrer σ ; TEST 2023+ scellé, jamais lu.")
@@ -94,7 +95,8 @@ def main() -> None:
         {"cle": "convention", "libelle": "Si bid ET ask touchés dans la même barre", "type": "choix"},
     ]
     data = {
-        "titre": "Projet 02 : 30 variantes de rejeu d'un market maker FX",
+        "titre": "FX market making : simulation vs rejeu réel",
+        "description": "Simulateur de market making FX (Avellaneda-Stoikov, GLFT) : 30 variantes rejouées sur EURUSD 1 minute réel, comparées à la simulation.",
         "libelles": {"train": "SÉLECTION 2019-2020", "val": "ÉVALUATION 2021-2022"},
         "sous_titre": ("Les deux périodes de la page sont la SÉLECTION 2019-2020 et l'ÉVALUATION 2021-2022 : les deux moitiés de la VAL 2019-2022 du dépôt. "
                        "Le rejeu ne couvre pas TRAIN ≤ 2018 (qui sert seulement à calibrer σ) et le TEST 2023+ est scellé. Filtrer les 30 variantes (5 stratégies × 3 modèles de fill × 2 conventions) sur "

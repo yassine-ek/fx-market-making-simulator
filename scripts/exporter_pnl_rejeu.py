@@ -15,7 +15,7 @@ from pathlib import Path
 RACINE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RACINE))
 
-from mm.donnees import ANNEES_VAL, dossier_donnees  # noqa: E402
+from mm.donnees import ANNEES_VAL, DonneesManquantes, verifier_donnees  # noqa: E402
 from mm.modeles import Strategie  # noqa: E402
 from mm.rejeu_reel import construire_jours  # noqa: E402
 from mm.simulateur import Marche  # noqa: E402
@@ -32,8 +32,7 @@ def verifier_contre_verdict(stats, verdict):
 
 
 def main():
-    if not (dossier_donnees() / "EURUSD_2019.zip").exists():
-        sys.exit("Données absentes : définir HISTDATA_DIR (racine contenant histdata_raw/EURUSD/EURUSD_<année>.zip).")
+    verifier_donnees(ANNEES_VAL)
     verdict = json.loads((RACINE / "results" / "verdict_mm.json").read_text(encoding="utf-8"))
     hyp = verdict["hypotheses"]
     marche = Marche(**hyp["marche_simule"])
@@ -47,4 +46,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except DonneesManquantes as e:
+        sys.exit(f"ERREUR : {e}")  # message d'aide, pas de trace brute

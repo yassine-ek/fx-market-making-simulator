@@ -8,7 +8,8 @@ Les scripts « calcul » (`run_all.py`, `exporter_pnl_rejeu.py`, `construire_not
 | `exporter_pnl_rejeu.py` | Recalcule seulement les 30 variantes du rejeu VAL (≈ 10 s, sans recalibrer σ) → `results/rejeu_pnl_quotidien.csv`, `rejeu_executions_quotidiennes.csv`, `rejeu_variantes.json` ; refuse d'écrire si un Sharpe s'écarte de `verdict_mm.json`. |
 | `exporter_dashboard.py` | Écrit `docs/data.json`, `docs/data.js`, copie la page du gabarit commun et crée `docs/.nojekyll` (lit `results/`, sans données). |
 | `generer_figures_vitrine.py` | Écrit `figures/hero_equity.png`, `toutes_variantes.png`, `overfit_scatter.png` (lit `results/`, sans données). |
-| `generer_readme_tete.py` | Fonctions des blocs de chiffres du README (frais et hypothèses, métriques, « overfit ou pas ? », 30 variantes) ; seul, il réécrit ces blocs dans `README.md`. |
-| `generer_readme.py` | Assemble le `README.md` entier depuis `modele_readme.md` et `results/` ; vérifie au passage que les affirmations qualitatives du texte tiennent (sinon il s'arrête). |
-| `modele_readme.md` | Le modèle du README, avec des marqueurs `<<cle>>` remplacés par des chiffres lus dans les résultats. À éditer à la place du README. |
+| `generer_readme_tete.py` | Fonctions des blocs de chiffres du README (résultats clés avec leurs réserves, frais et hypothèses, métriques, « overfit ou pas ? », 30 variantes repliées) ; seul, il réécrit ces blocs dans `README.md`. |
+| `generer_readme.py` | Assemble le `README.md` entier et `docs/details.md` depuis `modele_readme.md`, `modele_details.md` et `results/` ; vérifie au passage que les affirmations qualitatives du texte tiennent (sinon il s'arrête). |
+| `modele_readme.md` | Le modèle du README (premier écran, limites, reproduire), avec des marqueurs `<<cle>>` remplacés par des chiffres lus dans les résultats. À éditer à la place du README. |
+| `modele_details.md` | Le modèle de `docs/details.md` (méthode, résultats détaillés, tests, positionnement), même mécanisme de marqueurs. À éditer à la place de la page générée. |
 | `construire_notebook.py` | Génère `notebooks/visite_guidee.ipynb` (à exécuter ensuite avec nbconvert, voir le README principal). |

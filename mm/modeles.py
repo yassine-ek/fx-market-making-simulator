@@ -115,7 +115,7 @@ class Strategie:
 
     nom: str
     modele: str            # "naif" | "as" | "as_plafonne" | "glft" | "placebo"
-    gamma: float           # aversion au risque (unités de chaque modèle : voir README)
+    gamma: float           # aversion au risque (CARA) : même grandeur dans AS et GLFT, mais pas le même effet à γ égal
     sigma: float           # pips / sqrt(s)
     k: float               # 1/pip
     A: float               # exécutions / s à profondeur nulle
@@ -132,10 +132,11 @@ class Strategie:
 def gamma_pour_skew_cible(modele, skew_cible, q_ref, sigma, A, k, duree):
     """gamma tel qu'un inventaire q_ref décale la cote de `skew_cible` pips.
 
-    gamma n'a pas la même unité dans AS (multiplié par T-t, jusqu'à 32 400 s) et GLFT
-    (stationnaire) : les comparer à gamma égal n'aurait aucun sens. On égalise donc
-    l'AGRESSIVITÉ de contrôle d'inventaire, pas gamma. Critère fixé a priori, pas optimisé.
-    AS : décalage moyen sur la session (T-t = T/2). GLFT : pente c2.
+    gamma est l'aversion au risque (CARA) dans AS comme dans GLFT : même grandeur. Ce qui diffère est
+    l'effet d'un même gamma : le décalage d'AS vaut q·gamma·sigma²·(T-t) (il croît avec l'horizon restant,
+    jusqu'à 32 400 s), celui de GLFT, stationnaire, a pour pente c2 ~ sqrt(gamma). Comparer à gamma égal
+    n'aurait donc aucun sens : on égalise l'AGRESSIVITÉ de contrôle d'inventaire (le skew), pas gamma.
+    Critère fixé a priori, pas optimisé. AS : décalage moyen sur la session (T-t = T/2). GLFT : pente c2.
     """
     if modele in ("as", "as_plafonne"):
         return skew_cible / (q_ref * sigma * sigma * duree / 2.0)

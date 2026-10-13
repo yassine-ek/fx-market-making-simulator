@@ -14,7 +14,7 @@ sys.path.insert(0, str(RACINE))
 
 from mm import figures  # noqa: E402
 from mm.calibration import SESSION_LONDRES, Hypotheses, grille_sensibilite_Ak, sigma_par_heure, sigma_session  # noqa: E402
-from mm.donnees import ANNEE_TEST_DEBUT, ANNEES_VAL  # noqa: E402
+from mm.donnees import ANNEE_TEST_DEBUT, ANNEE_TRAIN_FIN, ANNEES_VAL, DonneesManquantes, verifier_donnees  # noqa: E402
 import numpy as np  # noqa: E402
 
 from mm.modeles import jeu_strategies_base, strategie_placebo  # noqa: E402
@@ -30,6 +30,7 @@ N_GRAINES_PLACEBO = 30
 
 
 def main(rapide=False):
+    verifier_donnees([*range(2010, ANNEE_TRAIN_FIN + 1), *ANNEES_VAL])  # TRAIN 2010-2018 et VAL 2019-2022 ; message clair si elles manquent
     debut = time.time()
     n_mc, n_sens = (150, 60) if rapide else (2000, 500)
     dossier_res, dossier_fig = RACINE / "results", RACINE / "figures"
@@ -201,4 +202,7 @@ def main(rapide=False):
 
 
 if __name__ == "__main__":
-    main(rapide="--rapide" in sys.argv)
+    try:
+        main(rapide="--rapide" in sys.argv)
+    except DonneesManquantes as e:
+        sys.exit(f"ERREUR : {e}")  # message d'aide, pas de trace brute

@@ -4,7 +4,7 @@ Toutes les images sont produites par un script (aucune n'est retouchée) ; aucun
 
 | Image | Ce qu'elle montre | Script |
 |---|---|---|
-| `hero_equity.png` | Figure héro : PnL cumulé NET du rejeu VAL 2019-2022 pour les 5 stratégies (cas de base : probabiliste, côté perdant seul), drawdown en dessous, frais dans le titre, période de sélection 2019-2020 grisée. | `scripts/generer_figures_vitrine.py` |
+| `hero_equity.png` | Figure héro (10 x 5,8 pouces, texte de 11 pt ou plus) : PnL cumulé NET du rejeu VAL 2019-2022 pour les 5 stratégies (cas de base : probabiliste, côté perdant seul), drawdown en dessous, échelle du capital de référence arbitraire (100 M USD) rappelée, période de sélection 2019-2020 grisée. | `scripts/generer_figures_vitrine.py` |
 | `toutes_variantes.png` | Les 30 variantes du rejeu en gris fin et le cas de base en couleur. | `scripts/generer_figures_vitrine.py` |
 | `overfit_scatter.png` | Sharpe simulé (x) contre Sharpe du rejeu réel (y) pour chaque variante, diagonale, IC 95 % par blocs. | `scripts/generer_figures_vitrine.py` |
 | `distributions_pnl.png` | Histogramme du PnL d'une session simulée de 9 h, une case par stratégie, moyenne et écart-type. | `scripts/run_all.py` (via `mm/figures.py`) |

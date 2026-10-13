@@ -12,8 +12,10 @@ Règles (une session = une journée, 541 barres de 02:59 à 11:59, heure de New 
       "traversee"    : il faut la dépasser d'au moins 0,1 pip (toucher ne suffit pas), f = 1 ;
       "probabiliste" : traversée >= 0,1 pip ET exécution seulement avec probabilité f = 0,5 (file d'attente) ;
   - si bid ET ask sont atteints dans la même barre, l'ordre intra-barre est inconnu : on suppose l'ordre
-    DÉFAVORABLE, le côté qui perd (celui dont le close s'éloigne) passe en premier. Deux lectures, présentées
-    toutes les deux car elles encadrent la vérité :
+    DÉFAVORABLE, le côté qui perd (celui dont le close s'éloigne) passe en premier. ATTENTION : ce critère
+    utilise le close de la barre, information postérieure à la pose des cotes, retournée contre la stratégie :
+    c'est un choix pessimiste fait a posteriori (un oracle adverse), pas une hypothèse de fill réaliste.
+    Deux lectures, présentées toutes les deux car elles encadrent la vérité :
       "adverse"    : seul ce côté perdant est exécuté (borne pessimiste ; c'est le cas de base) ;
       "deux_cotes" : le côté perdant d'abord, puis l'autre aussi (borne optimiste : aller-retour à chaque barre).
     Le close de la barre i sert à décider du fill, jamais à coter ;
@@ -95,7 +97,7 @@ def _rejouer(H, L, C, valide, ub, ua, wb, wa, p, f, seuil, deux_cotes, horizons,
             peut_bid = q < borne and valide[d, i] and L[d, i] <= bid - seuil
             peut_ask = q > -borne and valide[d, i] and H[d, i] >= ask + seuil
             cote1 = cote2 = 0
-            if peut_bid and peut_ask:  # ordre intra-barre inconnu : on suppose le pire (côté qui perd d'abord)
+            if peut_bid and peut_ask:  # ordre intra-barre inconnu : pire cas choisi AVEC le close de la barre (oracle adverse, pas un fill réaliste)
                 cote1 = 1 if C[d, i] - bid <= ask - C[d, i] else -1
                 cote2 = -cote1 if deux_cotes else 0
             elif peut_bid:

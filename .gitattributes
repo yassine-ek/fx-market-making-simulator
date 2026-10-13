@@ -1,0 +1,5 @@
+# Le carnet exécuté n'est pas du code : GitHub ne le compte pas dans la barre de langages.
+*.ipynb linguist-documentation
+# Fins de ligne identiques sous Windows et Linux : les README générés sont comparés octet pour octet aux sorties des scripts.
+*.md text eol=lf
+*.json text eol=lf

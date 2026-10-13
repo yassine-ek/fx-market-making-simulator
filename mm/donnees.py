@@ -32,11 +32,34 @@ def dossier_donnees():
     return racine / "histdata_raw" / "EURUSD"
 
 
+class DonneesManquantes(FileNotFoundError):
+    """Archive(s) HistData absente(s) : le message dit où les télécharger et où les poser (pas de trace brute pour l'utilisateur)."""
+
+
+def message_donnees_absentes(manquants):
+    """Texte d'aide : source, arborescence attendue, variable HISTDATA_DIR."""
+    racine = dossier_donnees()
+    fichiers = ", ".join(f"EURUSD_{a}.zip" for a in manquants)
+    return (f"Données HistData introuvables dans {racine} (manque : {fichiers}). "
+            "Télécharger les barres EURUSD 1 minute (une archive par année, 2010 à 2022) sur https://www.histdata.com, "
+            "les nommer EURUSD_<année>.zip et les poser dans <HISTDATA_DIR>/histdata_raw/EURUSD/ ; "
+            "HISTDATA_DIR est une variable d'environnement (défaut : ./data/histdata). Voir « Obtenir les données » dans le README.")
+
+
+def verifier_donnees(annees):
+    """Lève `DonneesManquantes` si une archive annuelle manque, avant tout calcul long."""
+    manquants = [a for a in annees if not (dossier_donnees() / f"EURUSD_{a}.zip").exists()]
+    if manquants:
+        raise DonneesManquantes(message_donnees_absentes(manquants))
+
+
 def charger_annee(annee):
     """Barres 1 min d'une année : colonnes open/high/low/close en PIPS (prix * 1e4), index = heure de New York (voir l'en-tête)."""
     if annee >= ANNEE_TEST_DEBUT:
         raise PermissionError(f"{annee} appartient au TEST (2023+), scellé : lecture interdite.")
     chemin = dossier_donnees() / f"EURUSD_{annee}.zip"
+    if not chemin.exists():
+        raise DonneesManquantes(message_donnees_absentes([annee]))
     with zipfile.ZipFile(chemin) as z:
         nom = next(n for n in z.namelist() if n.endswith(".csv"))  # le zip contient aussi un .txt de description
         brut = pd.read_csv(z.open(nom), header=None, names=["d", "t", "open", "high", "low", "close", "vol"],

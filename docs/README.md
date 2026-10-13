@@ -8,7 +8,8 @@ Page statique qui permet de choisir les conditions de départ (nombre d'exécuti
 
 | Fichier | Rôle |
 |---|---|
-| `index.html` | La page (copie du gabarit commun `projets_cv/_outils/dashboard/`) ; charge Plotly 2.35.0 depuis cdnjs. |
+| `index.html` | La page (copie du gabarit commun des tableaux de bord du portfolio) ; charge Plotly 2.35.0 depuis cdnjs. Titre et description de la page : champs `titre` et `description` de `data.json`. |
+| `details.md` | Méthode, résultats détaillés, validation par les tests, positionnement : la partie longue du README. Générée par `scripts/generer_readme.py` (modèle `scripts/modele_details.md`), ne pas éditer à la main. |
 | `data.json` | Rendements quotidiens nets des 30 variantes, leurs statistiques de sélection (exécutions, Sharpe, PnL par jour), filtres, frais. Généré. |
 | `data.js` | Même contenu que `data.json`, sous la forme `window.DATA = ...`, pour l'ouverture directe en `file://`. Généré. |
 | `.nojekyll` | Fichier vide : demande à GitHub Pages de servir les fichiers tels quels. |
