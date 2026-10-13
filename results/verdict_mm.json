@@ -1,0 +1,1901 @@
+{
+  "meta": {
+    "graines": {
+      "monte_carlo": 20260713,
+      "sensibilites": 777,
+      "rejeu": 20260714
+    },
+    "n_sessions_monte_carlo": 2000,
+    "n_sessions_sensibilites": 500,
+    "unites": "prix en pips, PnL en pips x lot (1 pip x 1 lot = 100 USD), Sharpe journalier x sqrt(252)",
+    "split": {
+      "train": "<= 2018 (calibration de sigma uniquement)",
+      "val": "2019-2022 (rejeu)",
+      "test": ">= 2023 : scellé, jamais lu"
+    },
+    "mode_rapide": false
+  },
+  "calibration": {
+    "sigma_session_londres_pips_par_racine_s": 0.32970248925783124,
+    "sigma_par_heure_est": {
+      "0": 0.15218176124415447,
+      "1": 0.18815525086463453,
+      "2": 0.2782473182343955,
+      "3": 0.3199100714556183,
+      "4": 0.30549462473078937,
+      "5": 0.2880402514483853,
+      "6": 0.2632099600986149,
+      "7": 0.2765797361246249,
+      "8": 0.42597610674328,
+      "9": 0.3607832368125853,
+      "10": 0.3794218970545604,
+      "11": 0.3135920595570112,
+      "12": 0.2644321407885145,
+      "13": 0.23764466054955705,
+      "14": 0.2797914415481408,
+      "15": 0.2051913657096807,
+      "16": 0.16826464630648347,
+      "17": 0.16894499852047867,
+      "18": 0.16319397007140823,
+      "19": 0.18376620999755885,
+      "20": 0.20650047718350975,
+      "21": 0.19847046467209165,
+      "22": 0.174926643105546,
+      "23": 0.1536630145444412
+    },
+    "periode": "2010-2018, variations de close 1 min consécutives"
+  },
+  "hypotheses": {
+    "marche_simule": {
+      "sigma": 0.32970248925783124,
+      "A": 0.1,
+      "k": 6.0,
+      "p_adverse": 0.2,
+      "alpha": 0.3,
+      "demi_spread_liq": 0.1,
+      "frais": 0.005,
+      "dt": 0.1,
+      "duree": 32400.0
+    },
+    "hypotheses_non_mesurees": {
+      "A": 0.1,
+      "k": 6.0,
+      "demi_spread_marche": 0.1,
+      "p_adverse": 0.2,
+      "alpha": 0.3,
+      "frais": 0.005,
+      "Q": 20,
+      "latence_pas": 1
+    },
+    "strategies": {
+      "Naïve symétrique": {
+        "nom": "Naïve symétrique",
+        "modele": "naif",
+        "gamma": 0.0,
+        "sigma": 0.32970248925783124,
+        "k": 6.0,
+        "A": 0.1,
+        "demi_naif": 0.16666666666666666,
+        "cap": 0.08333333333333333,
+        "Q": 20,
+        "latence_pas": 1
+      },
+      "Avellaneda-Stoikov": {
+        "nom": "Avellaneda-Stoikov",
+        "modele": "as",
+        "gamma": 9.464317102055391e-06,
+        "sigma": 0.32970248925783124,
+        "k": 6.0,
+        "A": 0.1,
+        "demi_naif": 0.16666666666666666,
+        "cap": 0.08333333333333333,
+        "Q": 20,
+        "latence_pas": 1
+      },
+      "AS skew plafonné": {
+        "nom": "AS skew plafonné",
+        "modele": "as_plafonne",
+        "gamma": 9.464317102055391e-06,
+        "sigma": 0.32970248925783124,
+        "k": 6.0,
+        "A": 0.1,
+        "demi_naif": 0.16666666666666666,
+        "cap": 0.08333333333333333,
+        "Q": 20,
+        "latence_pas": 1
+      },
+      "GLFT asymptotique": {
+        "nom": "GLFT asymptotique",
+        "modele": "glft",
+        "gamma": 0.001127973745046571,
+        "sigma": 0.32970248925783124,
+        "k": 6.0,
+        "A": 0.1,
+        "demi_naif": 0.16666666666666666,
+        "cap": 0.08333333333333333,
+        "Q": 20,
+        "latence_pas": 1
+      },
+      "Placebo (cotes aléatoires)": {
+        "nom": "Placebo (cotes aléatoires)",
+        "modele": "placebo",
+        "gamma": 0.0,
+        "sigma": 0.32970248925783124,
+        "k": 6.0,
+        "A": 0.1,
+        "demi_naif": 0.17499989427145418,
+        "cap": 0.08333333333333333,
+        "Q": 20,
+        "latence_pas": 1
+      }
+    },
+    "placebo_demi_spread_moyen_pips": 0.17499989427145418,
+    "rejeu": {
+      "modeles_fill (seuil_pips, f)": {
+        "touche": [
+          0.0,
+          1.0
+        ],
+        "traversee": [
+          0.1,
+          1.0
+        ],
+        "probabiliste": [
+          0.1,
+          0.5
+        ]
+      },
+      "modele_de_base": "probabiliste + adverse",
+      "ordre_si_bid_et_ask_touches": "défavorable : côté perdant d'abord ; adverse = lui seul est exécuté (pessimiste), deux_cotes = l'autre aussi (optimiste)",
+      "demi_spread_marche": 0.1,
+      "session": "03h00-12h00 heure de New York",
+      "n_jours": 1036,
+      "reference_causale": "close de la minute précédente (+ demi-spread : HistData est en BID)"
+    }
+  },
+  "monte_carlo": {
+    "Naïve symétrique": {
+      "sharpe_annualise": 6.998517699495944,
+      "sharpe_ic95": [
+        6.27367204853237,
+        7.758518895670072
+      ],
+      "pnl_moyen_pips_lot": 297.78934978694946,
+      "pnl_ecart_type": 675.4658027170287,
+      "proba_perte": 0.3245,
+      "cvar_5pct": -1128.4254019881464,
+      "inventaire_max_moyen": 19.998,
+      "inventaire_max_p95": 20.0,
+      "executions_moyennes": 2325.0925,
+      "decomposition_moyenne": {
+        "capture_spread": 387.55396666667644,
+        "inventaire_total": -77.08870437972661,
+        "dont_selection_adverse": -75.28845,
+        "cout_liquidation": -1.05045,
+        "frais": -11.625462500000419
+      }
+    },
+    "Avellaneda-Stoikov": {
+      "sharpe_annualise": 24.95280802795194,
+      "sharpe_ic95": [
+        23.938479385403433,
+        25.989916135230988
+      ],
+      "pnl_moyen_pips_lot": 302.19629591936706,
+      "pnl_ecart_type": 192.2516083717458,
+      "proba_perte": 0.0565,
+      "cvar_5pct": -92.11543533314352,
+      "inventaire_max_moyen": 14.1365,
+      "inventaire_max_p95": 20.0,
+      "executions_moyennes": 2319.28,
+      "decomposition_moyenne": {
+        "capture_spread": 386.80465708018573,
+        "inventaire_total": -72.2462611608183,
+        "dont_selection_adverse": -72.13020000000002,
+        "cout_liquidation": -0.7657,
+        "frais": -11.596400000000413
+      }
+    },
+    "AS skew plafonné": {
+      "sharpe_annualise": 24.74697305517282,
+      "sharpe_ic95": [
+        23.723500418520434,
+        25.79721513050605
+      ],
+      "pnl_moyen_pips_lot": 302.9088874941561,
+      "pnl_ecart_type": 194.30778489976012,
+      "proba_perte": 0.056,
+      "cvar_5pct": -94.66681012852409,
+      "inventaire_max_moyen": 14.164,
+      "inventaire_max_p95": 20.0,
+      "executions_moyennes": 2315.386,
+      "decomposition_moyenne": {
+        "capture_spread": 387.485273097991,
+        "inventaire_total": -72.23375560383454,
+        "dont_selection_adverse": -72.06120000000001,
+        "cout_liquidation": -0.7657,
+        "frais": -11.576930000000408
+      }
+    },
+    "GLFT asymptotique": {
+      "sharpe_annualise": 36.01715584607083,
+      "sharpe_ic95": [
+        34.7591548533467,
+        37.262437018396284
+      ],
+      "pnl_moyen_pips_lot": 305.9591172548898,
+      "pnl_ecart_type": 134.85102583927628,
+      "proba_perte": 0.0075,
+      "cvar_5pct": 39.57183286379802,
+      "inventaire_max_moyen": 7.91,
+      "inventaire_max_p95": 9.0,
+      "executions_moyennes": 2320.3025,
+      "decomposition_moyenne": {
+        "capture_spread": 386.81340833443204,
+        "inventaire_total": -69.07632857954191,
+        "dont_selection_adverse": -69.68969999999999,
+        "cout_liquidation": -0.17645000000000002,
+        "frais": -11.601512500000416
+      }
+    },
+    "Placebo (cotes aléatoires)": {
+      "sharpe_annualise": 5.676391979932286,
+      "sharpe_ic95": [
+        4.959423288350476,
+        6.387824104839282
+      ],
+      "pnl_moyen_pips_lot": 245.63794646429056,
+      "pnl_ecart_type": 686.9471888509678,
+      "proba_perte": 0.3625,
+      "cvar_5pct": -1182.856483285735,
+      "inventaire_max_moyen": 19.999,
+      "inventaire_max_p95": 20.0,
+      "executions_moyennes": 2636.7345,
+      "decomposition_moyenne": {
+        "capture_spread": 311.14891471829276,
+        "inventaire_total": -51.30844575400155,
+        "dont_selection_adverse": -84.60629999999999,
+        "cout_liquidation": -1.01885,
+        "frais": -13.183672500000661
+      }
+    }
+  },
+  "sensibilites_monte_carlo": {
+    "sharpe_AS_p_adverse_x_k_reel": {
+      "p": [
+        0.0,
+        0.1,
+        0.2,
+        0.3,
+        0.4
+      ],
+      "k": [
+        4.0,
+        5.0,
+        6.0,
+        8.0,
+        10.0
+      ],
+      "sharpe": [
+        [
+          37.98182687261429,
+          34.838563050702874,
+          31.367052909395664,
+          26.073327803306217,
+          19.917933455606303
+        ],
+        [
+          34.21018026326414,
+          31.45778489232926,
+          28.233480759398944,
+          23.516365095793702,
+          17.917785281248317
+        ],
+        [
+          30.639570530096627,
+          28.1951877050114,
+          25.290910277745358,
+          21.044970745089156,
+          16.047965573462175
+        ],
+        [
+          26.97303171686513,
+          24.773483738617653,
+          22.18909547914971,
+          18.523015117442174,
+          14.026160654718401
+        ],
+        [
+          23.331598399055316,
+          21.411208738933578,
+          19.158086587575685,
+          15.925743009368034,
+          11.95811872354965
+        ]
+      ]
+    },
+    "sharpe_AS_latence_x_gamma": {
+      "latence_ms": [
+        100.0,
+        200.0,
+        500.0,
+        1000.0,
+        3000.0
+      ],
+      "gamma": [
+        2.366079275513848e-06,
+        4.732158551027696e-06,
+        9.464317102055391e-06,
+        1.8928634204110783e-05,
+        3.7857268408221566e-05
+      ],
+      "sharpe": [
+        [
+          15.869655417072062,
+          19.964336002016296,
+          25.290910277745358,
+          34.066908043788835,
+          42.33095152575822
+        ],
+        [
+          12.655086531076215,
+          16.4194268625203,
+          21.269542840083265,
+          26.950433880068225,
+          35.03008621417443
+        ],
+        [
+          6.158562861695891,
+          7.74770541948339,
+          9.699602085807692,
+          12.82335333464407,
+          16.105659701306724
+        ],
+        [
+          -1.5373398636608508,
+          -2.1522295970029006,
+          -3.2242416722675693,
+          -4.651094631072688,
+          -5.49451200070494
+        ],
+        [
+          -16.030621662947265,
+          -19.86380008533246,
+          -25.860083269390618,
+          -33.59578570924977,
+          -43.84482170129251
+        ]
+      ]
+    },
+    "sharpe_A_x_k_reels": {
+      "A": [
+        0.05,
+        0.1,
+        0.2
+      ],
+      "k": [
+        4.0,
+        6.0,
+        9.0
+      ],
+      "strategies": [
+        "Naïve symétrique",
+        "Avellaneda-Stoikov",
+        "AS skew plafonné",
+        "GLFT asymptotique",
+        "Placebo (cotes aléatoires)"
+      ],
+      "sharpe": [
+        [
+          [
+            4.996530090397592,
+            15.504333077982835,
+            15.309831053674841,
+            21.2453909481793,
+            3.914914800737849
+          ],
+          [
+            3.2083474011728885,
+            13.04740839048339,
+            13.034332400117595,
+            18.08606968643974,
+            2.109972659289035
+          ],
+          [
+            1.4189441207468725,
+            9.28920062201239,
+            9.278343560808038,
+            13.964407662079132,
+            1.0784596128466286
+          ]
+        ],
+        [
+          [
+            9.842426155671644,
+            30.639570530096627,
+            29.85687306894279,
+            42.89649974557055,
+            9.16736536217524
+          ],
+          [
+            6.939413501374586,
+            25.290910277745358,
+            25.04051629375762,
+            35.328710135960755,
+            5.853034897493213
+          ],
+          [
+            3.9814440882079296,
+            18.85842015641554,
+            18.821091693440422,
+            26.362713839764687,
+            2.7108083130256997
+          ]
+        ],
+        [
+          [
+            19.162305492215882,
+            59.5447811977601,
+            57.769871184291425,
+            81.8450281175832,
+            15.360915252185366
+          ],
+          [
+            14.242049641556067,
+            49.42581349658104,
+            49.140418916397564,
+            72.31385766092127,
+            10.393258928978934
+          ],
+          [
+            8.563003310268536,
+            36.537599573559504,
+            36.36741074343407,
+            53.06251114218084,
+            6.209319826110843
+          ]
+        ]
+      ]
+    },
+    "sharpe_vs_p_adverse": {
+      "p": [
+        0.0,
+        0.1,
+        0.2,
+        0.3,
+        0.4
+      ],
+      "strategies": [
+        "Naïve symétrique",
+        "Avellaneda-Stoikov",
+        "AS skew plafonné",
+        "GLFT asymptotique",
+        "Placebo (cotes aléatoires)"
+      ],
+      "sharpe": [
+        [
+          8.774170069807695,
+          31.367052909395664,
+          31.05616770699109,
+          43.52350083520541,
+          7.910474606421056
+        ],
+        [
+          7.822641086372577,
+          28.233480759398944,
+          27.948779405783384,
+          39.38135071598289,
+          6.927445037886055
+        ],
+        [
+          6.939413501374586,
+          25.290910277745358,
+          25.04051629375762,
+          35.328710135960755,
+          5.853034897493213
+        ],
+        [
+          6.140327934540209,
+          22.18909547914971,
+          21.99441036058206,
+          31.000867438604093,
+          4.885170110986318
+        ],
+        [
+          5.26589330969888,
+          19.158086587575685,
+          18.981800178092453,
+          26.9272390464473,
+          3.8755085840458663
+        ]
+      ]
+    },
+    "sharpe_vs_latence": {
+      "latence_ms": [
+        100.0,
+        200.0,
+        500.0,
+        1000.0,
+        3000.0,
+        10000.0,
+        60000.0
+      ],
+      "strategies": [
+        "Naïve symétrique",
+        "Avellaneda-Stoikov",
+        "AS skew plafonné",
+        "GLFT asymptotique",
+        "Placebo (cotes aléatoires)"
+      ],
+      "sharpe": [
+        [
+          6.939413501374586,
+          25.290910277745358,
+          25.04051629375762,
+          35.328710135960755,
+          5.853034897493213
+        ],
+        [
+          5.516110879554391,
+          21.269542840083265,
+          21.028749036865808,
+          27.611116968984,
+          4.118707843829139
+        ],
+        [
+          2.9287203168263503,
+          9.699602085807692,
+          9.619203627461816,
+          12.946017569948447,
+          1.6116786197884223
+        ],
+        [
+          -1.2139710265081236,
+          -3.2242416722675693,
+          -2.77623056753811,
+          -4.216811383711162,
+          -1.9067246982905794
+        ],
+        [
+          -10.958035171236089,
+          -25.860083269390618,
+          -23.187678195733536,
+          -33.86647951687744,
+          -11.377726698405041
+        ],
+        [
+          -31.695132999932753,
+          -52.319454794768355,
+          -43.95008085990353,
+          -59.79763017609837,
+          -30.558526029020847
+        ],
+        [
+          -85.05600128445265,
+          -99.206113500523,
+          -91.31775082733414,
+          -101.23073824366182,
+          -84.40427802511138
+        ]
+      ]
+    }
+  },
+  "rejeu_val": {
+    "modele_de_base": "probabiliste",
+    "base": {
+      "Naïve symétrique": {
+        "sharpe_annualise": -10.932613937831777,
+        "sharpe_ic95": [
+          -12.03398667614976,
+          -9.987412219424149
+        ],
+        "sharpe_ic95_iid": [
+          -11.956264117051257,
+          -9.9593216082357
+        ],
+        "bloc_jours": 10,
+        "pnl_moyen_pips_lot": -287.48641731016767,
+        "pnl_ecart_type": 417.4395454757027,
+        "proba_perte": 0.8223938223938224,
+        "cvar_5pct": -1461.55192307692,
+        "inventaire_max_moyen": 16.44111969111969,
+        "inventaire_max_p95": 20.0,
+        "executions_moyennes": 267.29633204633205,
+        "decomposition_moyenne": {
+          "capture_spread": 44.549388674388666,
+          "inventaire_total": -329.71602316602355,
+          "dont_selection_adverse": 0.0,
+          "cout_liquidation": -0.9833011583011584,
+          "frais": -1.3364816602316534
+        }
+      },
+      "Avellaneda-Stoikov": {
+        "sharpe_annualise": -14.557438157700934,
+        "sharpe_ic95": [
+          -16.10866984740911,
+          -13.219535161719163
+        ],
+        "sharpe_ic95_iid": [
+          -16.040149478819334,
+          -13.321189730175192
+        ],
+        "bloc_jours": 10,
+        "pnl_moyen_pips_lot": -287.4337376061538,
+        "pnl_ecart_type": 313.4390185460131,
+        "proba_perte": 0.9333976833976834,
+        "cvar_5pct": -1220.2626403160773,
+        "inventaire_max_moyen": 13.008687258687258,
+        "inventaire_max_p95": 20.0,
+        "executions_moyennes": 267.39478764478764,
+        "decomposition_moyenne": {
+          "capture_spread": 45.601016254850805,
+          "inventaire_total": -330.9648648648656,
+          "dont_selection_adverse": 0.0,
+          "cout_liquidation": -0.7329150579150578,
+          "frais": -1.3369739382239316
+        }
+      },
+      "AS skew plafonné": {
+        "sharpe_annualise": -12.909670851659289,
+        "sharpe_ic95": [
+          -14.161029561002968,
+          -11.827838089887464
+        ],
+        "sharpe_ic95_iid": [
+          -14.080238129864682,
+          -11.833264098576004
+        ],
+        "bloc_jours": 10,
+        "pnl_moyen_pips_lot": -288.0360148341996,
+        "pnl_ecart_type": 354.1864107790729,
+        "proba_perte": 0.9054054054054054,
+        "cvar_5pct": -1357.107566524715,
+        "inventaire_max_moyen": 14.00965250965251,
+        "inventaire_max_p95": 20.0,
+        "executions_moyennes": 267.511583011583,
+        "decomposition_moyenne": {
+          "capture_spread": 45.99497937429527,
+          "inventaire_total": -331.9183397683404,
+          "dont_selection_adverse": 0.0,
+          "cout_liquidation": -0.775096525096525,
+          "frais": -1.3375579150579084
+        }
+      },
+      "GLFT asymptotique": {
+        "sharpe_annualise": -14.980967241548024,
+        "sharpe_ic95": [
+          -16.52030875567916,
+          -13.674338426686012
+        ],
+        "sharpe_ic95_iid": [
+          -16.39607900168429,
+          -13.78291078021448
+        ],
+        "bloc_jours": 10,
+        "pnl_moyen_pips_lot": -288.42714102492147,
+        "pnl_ecart_type": 305.6303939028347,
+        "proba_perte": 0.9353281853281853,
+        "cvar_5pct": -1215.5905293695714,
+        "inventaire_max_moyen": 12.444015444015443,
+        "inventaire_max_p95": 20.0,
+        "executions_moyennes": 267.3918918918919,
+        "decomposition_moyenne": {
+          "capture_spread": 45.48066785538838,
+          "inventaire_total": -332.03069498069596,
+          "dont_selection_adverse": 0.0,
+          "cout_liquidation": -0.54015444015444,
+          "frais": -1.336959459459453
+        }
+      },
+      "Placebo (cotes aléatoires)": {
+        "sharpe_annualise": -10.559948030510222,
+        "sharpe_ic95": [
+          -11.681513126486623,
+          -9.538270638711861
+        ],
+        "sharpe_ic95_iid": [
+          -11.613862858563888,
+          -9.503941222345262
+        ],
+        "bloc_jours": 10,
+        "pnl_moyen_pips_lot": -278.70877276566415,
+        "pnl_ecart_type": 418.9759829230886,
+        "proba_perte": 0.8194980694980695,
+        "cvar_5pct": -1470.3880568729135,
+        "inventaire_max_moyen": 16.344594594594593,
+        "inventaire_max_p95": 20.0,
+        "executions_moyennes": 266.2567567567568,
+        "decomposition_moyenne": {
+          "capture_spread": 45.29461526522432,
+          "inventaire_total": -321.7114864864869,
+          "dont_selection_adverse": 0.0,
+          "cout_liquidation": -0.9606177606177605,
+          "frais": -1.3312837837837772
+        }
+      }
+    },
+    "par_modele_de_fill": {
+      "touche": {
+        "adverse": {
+          "Naïve symétrique": {
+            "sharpe_annualise": -17.825351660579802,
+            "sharpe_ic95": [
+              -19.57609652709247,
+              -16.309033365232562
+            ],
+            "sharpe_ic95_iid": [
+              -19.11019728416261,
+              -16.75345870601956
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -577.6019932432433,
+            "pnl_ecart_type": 514.3880221818158,
+            "proba_perte": 0.9633204633204633,
+            "cvar_5pct": -2110.5973717948723,
+            "inventaire_max_moyen": 18.973938223938223,
+            "inventaire_max_p95": 20.0,
+            "executions_moyennes": 536.730694980695,
+            "decomposition_moyenne": {
+              "capture_spread": 89.45511583011596,
+              "inventaire_total": -663.3117760617762,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -1.0616795366795369,
+              "frais": -2.68365347490344
+            }
+          },
+          "Avellaneda-Stoikov": {
+            "sharpe_annualise": -22.755875998730033,
+            "sharpe_ic95": [
+              -26.18289994836962,
+              -20.28052065274845
+            ],
+            "sharpe_ic95_iid": [
+              -25.019830629422497,
+              -21.1119312866316
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -576.4868357009587,
+            "pnl_ecart_type": 402.1574387518398,
+            "proba_perte": 0.999034749034749,
+            "cvar_5pct": -1834.8228422301158,
+            "inventaire_max_moyen": 15.021235521235521,
+            "inventaire_max_p95": 20.0,
+            "executions_moyennes": 538.0675675675676,
+            "decomposition_moyenne": {
+              "capture_spread": 91.66267202104898,
+              "inventaire_total": -664.6888996138996,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -0.7702702702702703,
+              "frais": -2.6903378378378027
+            }
+          },
+          "AS skew plafonné": {
+            "sharpe_annualise": -20.420630893811694,
+            "sharpe_ic95": [
+              -23.190532346835443,
+              -18.411338091744202
+            ],
+            "sharpe_ic95_iid": [
+              -22.234388449817818,
+              -19.071678481637484
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -571.7421070976002,
+            "pnl_ecart_type": 444.4585783790005,
+            "proba_perte": 0.9922779922779923,
+            "cvar_5pct": -1996.8623114122186,
+            "inventaire_max_moyen": 16.373552123552123,
+            "inventaire_max_p95": 20.0,
+            "executions_moyennes": 537.9739382239383,
+            "decomposition_moyenne": {
+              "capture_spread": 92.30625680201376,
+              "inventaire_total": -660.5665057915058,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -0.791988416988417,
+              "frais": -2.689869691119656
+            }
+          },
+          "GLFT asymptotique": {
+            "sharpe_annualise": -23.162264027802582,
+            "sharpe_ic95": [
+              -26.70413427024939,
+              -20.602354403676824
+            ],
+            "sharpe_ic95_iid": [
+              -25.43497221806018,
+              -21.448872087880353
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -573.9143204239896,
+            "pnl_ecart_type": 393.3383793254088,
+            "proba_perte": 1.0,
+            "cvar_5pct": -1811.4089794383738,
+            "inventaire_max_moyen": 14.265444015444016,
+            "inventaire_max_p95": 20.0,
+            "executions_moyennes": 538.168918918919,
+            "decomposition_moyenne": {
+              "capture_spread": 91.40094502002641,
+              "inventaire_total": -662.094401544402,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -0.530019305019305,
+              "frais": -2.6908445945945596
+            }
+          },
+          "Placebo (cotes aléatoires)": {
+            "sharpe_annualise": -17.37811386745275,
+            "sharpe_ic95": [
+              -18.938950610882706,
+              -16.126572986242277
+            ],
+            "sharpe_ic95_iid": [
+              -18.575058957440653,
+              -16.422144763764642
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -559.7567825471141,
+            "pnl_ecart_type": 511.3249640083304,
+            "proba_perte": 0.9565637065637066,
+            "cvar_5pct": -2115.082543702414,
+            "inventaire_max_moyen": 18.657335907335906,
+            "inventaire_max_p95": 20.0,
+            "executions_moyennes": 535.8658301158301,
+            "decomposition_moyenne": {
+              "capture_spread": 91.3950369509557,
+              "inventaire_total": -647.4619691119694,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -1.0105212355212356,
+              "frais": -2.6793291505791155
+            }
+          }
+        },
+        "deux_cotes": {
+          "Naïve symétrique": {
+            "sharpe_annualise": -5.497594558569395,
+            "sharpe_ic95": [
+              -6.518483471040046,
+              -4.517466989414674
+            ],
+            "sharpe_ic95_iid": [
+              -6.393860544858762,
+              -4.585308325412935
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -133.01901061776113,
+            "pnl_ecart_type": 384.097318915462,
+            "proba_perte": 0.6476833976833977,
+            "cvar_5pct": -1172.3344871794854,
+            "inventaire_max_moyen": 15.828185328185327,
+            "inventaire_max_p95": 20.0,
+            "executions_moyennes": 870.7326254826255,
+            "decomposition_moyenne": {
+              "capture_spread": 145.12210424710426,
+              "inventaire_total": -272.77036679536735,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -1.0170849420849422,
+              "frais": -4.353663127413057
+            }
+          },
+          "Avellaneda-Stoikov": {
+            "sharpe_annualise": -13.545314405036073,
+            "sharpe_ic95": [
+              -15.06387965703782,
+              -12.214987843293754
+            ],
+            "sharpe_ic95_iid": [
+              -14.897156133383026,
+              -12.344966614978594
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -155.6332939703868,
+            "pnl_ecart_type": 182.39531955686124,
+            "proba_perte": 0.8745173745173745,
+            "cvar_5pct": -688.1917124865608,
+            "inventaire_max_moyen": 9.737451737451737,
+            "inventaire_max_p95": 17.0,
+            "executions_moyennes": 861.4507722007722,
+            "decomposition_moyenne": {
+              "capture_spread": 149.09982861648618,
+              "inventaire_total": -299.78310810810854,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -0.6427606177606179,
+              "frais": -4.307253861003791
+            }
+          },
+          "AS skew plafonné": {
+            "sharpe_annualise": -13.305669774031564,
+            "sharpe_ic95": [
+              -14.792577923215596,
+              -12.01053178239538
+            ],
+            "sharpe_ic95_iid": [
+              -14.629294036090542,
+              -12.135264252215178
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -154.13875639732717,
+            "pnl_ecart_type": 183.89731163478064,
+            "proba_perte": 0.8687258687258688,
+            "cvar_5pct": -690.3023008113105,
+            "inventaire_max_moyen": 9.836872586872587,
+            "inventaire_max_p95": 17.0,
+            "executions_moyennes": 862.3098455598456,
+            "decomposition_moyenne": {
+              "capture_spread": 149.48138356406312,
+              "inventaire_total": -298.66525096525135,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -0.6433397683397684,
+              "frais": -4.3115492277991585
+            }
+          },
+          "GLFT asymptotique": {
+            "sharpe_annualise": -16.164562112714115,
+            "sharpe_ic95": [
+              -18.16952040862551,
+              -14.254084240940548
+            ],
+            "sharpe_ic95_iid": [
+              -17.983108945868455,
+              -14.41586715003264
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -152.4348928751639,
+            "pnl_ecart_type": 149.69962620610883,
+            "proba_perte": 0.915057915057915,
+            "cvar_5pct": -563.9068934150711,
+            "inventaire_max_moyen": 7.6061776061776065,
+            "inventaire_max_p95": 11.0,
+            "executions_moyennes": 860.8214285714286,
+            "decomposition_moyenne": {
+              "capture_spread": 148.93822971170894,
+              "inventaire_total": -296.79787644787683,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -0.27113899613899617,
+              "frais": -4.304107142857073
+            }
+          },
+          "Placebo (cotes aléatoires)": {
+            "sharpe_annualise": -5.9123009632762775,
+            "sharpe_ic95": [
+              -6.987713173995497,
+              -4.855802639509492
+            ],
+            "sharpe_ic95_iid": [
+              -6.817396104388352,
+              -4.924694093825809
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -143.41698763924157,
+            "pnl_ecart_type": 385.07412132672215,
+            "proba_perte": 0.6534749034749034,
+            "cvar_5pct": -1171.9142758179291,
+            "inventaire_max_moyen": 15.945945945945946,
+            "inventaire_max_p95": 20.0,
+            "executions_moyennes": 857.1399613899614,
+            "decomposition_moyenne": {
+              "capture_spread": 143.15056544956192,
+              "inventaire_total": -281.26882239382286,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -1.013030888030888,
+              "frais": -4.285699806949737
+            }
+          }
+        }
+      },
+      "traversee": {
+        "adverse": {
+          "Naïve symétrique": {
+            "sharpe_annualise": -17.604042502861134,
+            "sharpe_ic95": [
+              -19.382664766593066,
+              -16.111505346929338
+            ],
+            "sharpe_ic95_iid": [
+              -18.861526292184195,
+              -16.54221679173091
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -568.429465894466,
+            "pnl_ecart_type": 512.5832902506115,
+            "proba_perte": 0.9536679536679536,
+            "cvar_5pct": -2094.1549038461544,
+            "inventaire_max_moyen": 18.842664092664094,
+            "inventaire_max_p95": 20.0,
+            "executions_moyennes": 533.2548262548263,
+            "decomposition_moyenne": {
+              "capture_spread": 88.87580437580449,
+              "inventaire_total": -653.6001930501933,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -1.0388030888030888,
+              "frais": -2.666274131274097
+            }
+          },
+          "Avellaneda-Stoikov": {
+            "sharpe_annualise": -22.40811811822699,
+            "sharpe_ic95": [
+              -25.77889726670923,
+              -19.977070453440348
+            ],
+            "sharpe_ic95_iid": [
+              -24.646204214572307,
+              -20.77776189235209
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -573.8296307895147,
+            "pnl_ecart_type": 406.51619827569743,
+            "proba_perte": 1.0,
+            "cvar_5pct": -1848.5101068840393,
+            "inventaire_max_moyen": 15.0,
+            "inventaire_max_p95": 20.0,
+            "executions_moyennes": 534.3638996138997,
+            "decomposition_moyenne": {
+              "capture_spread": 90.98745897882534,
+              "inventaire_total": -661.3602316602319,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -0.7850386100386101,
+              "frais": -2.671819498069463
+            }
+          },
+          "AS skew plafonné": {
+            "sharpe_annualise": -20.355264676080083,
+            "sharpe_ic95": [
+              -23.09548656610878,
+              -18.39931787048821
+            ],
+            "sharpe_ic95_iid": [
+              -22.239653555454062,
+              -18.98125773709821
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -572.8003901828479,
+            "pnl_ecart_type": 446.71117986064644,
+            "proba_perte": 0.9980694980694981,
+            "cvar_5pct": -2006.9321380094045,
+            "inventaire_max_moyen": 16.25096525096525,
+            "inventaire_max_p95": 20.0,
+            "executions_moyennes": 534.4276061776062,
+            "decomposition_moyenne": {
+              "capture_spread": 91.66016483645711,
+              "inventaire_total": -660.9817567567567,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -0.8066602316602317,
+              "frais": -2.672138030887996
+            }
+          },
+          "GLFT asymptotique": {
+            "sharpe_annualise": -22.903799833658077,
+            "sharpe_ic95": [
+              -26.3465215088939,
+              -20.472926911571484
+            ],
+            "sharpe_ic95_iid": [
+              -25.18545058182186,
+              -21.185479600909325
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -574.4547305159592,
+            "pnl_ecart_type": 398.15166936003834,
+            "proba_perte": 1.0,
+            "cvar_5pct": -1832.367284817618,
+            "inventaire_max_moyen": 14.217181467181467,
+            "inventaire_max_p95": 20.0,
+            "executions_moyennes": 534.4980694980695,
+            "decomposition_moyenne": {
+              "capture_spread": 90.7625474763193,
+              "inventaire_total": -662.0148648648654,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -0.5299227799227799,
+              "frais": -2.672490347490313
+            }
+          },
+          "Placebo (cotes aléatoires)": {
+            "sharpe_annualise": -17.546687053498466,
+            "sharpe_ic95": [
+              -19.153191680336214,
+              -16.22869953743169
+            ],
+            "sharpe_ic95_iid": [
+              -18.766940829125396,
+              -16.552149439143793
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -558.4679428337297,
+            "pnl_ecart_type": 505.24658726797793,
+            "proba_perte": 0.9555984555984556,
+            "cvar_5pct": -2089.9417808077806,
+            "inventaire_max_moyen": 18.667953667953668,
+            "inventaire_max_p95": 20.0,
+            "executions_moyennes": 531.023166023166,
+            "decomposition_moyenne": {
+              "capture_spread": 90.43997222418555,
+              "inventaire_total": -645.23638996139,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -1.0164092664092663,
+              "frais": -2.6551158301157955
+            }
+          }
+        },
+        "deux_cotes": {
+          "Naïve symétrique": {
+            "sharpe_annualise": -7.901003525611997,
+            "sharpe_ic95": [
+              -8.892169150213466,
+              -6.9786714311925655
+            ],
+            "sharpe_ic95_iid": [
+              -8.771667254465523,
+              -7.007283419365015
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -201.84430662805704,
+            "pnl_ecart_type": 405.5407674437712,
+            "proba_perte": 0.7297297297297297,
+            "cvar_5pct": -1309.8353846153827,
+            "inventaire_max_moyen": 16.826254826254825,
+            "inventaire_max_p95": 20.0,
+            "executions_moyennes": 805.296332046332,
+            "decomposition_moyenne": {
+              "capture_spread": 134.2160553410556,
+              "inventaire_total": -330.9980694980702,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -1.0358108108108108,
+              "frais": -4.026481660231597
+            }
+          },
+          "Avellaneda-Stoikov": {
+            "sharpe_annualise": -17.50860935639975,
+            "sharpe_ic95": [
+              -19.431016382668254,
+              -15.761847542105627
+            ],
+            "sharpe_ic95_iid": [
+              -19.31036084680272,
+              -15.950790956596627
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -226.01514303936608,
+            "pnl_ecart_type": 204.92085311102568,
+            "proba_perte": 0.9411196911196911,
+            "cvar_5pct": -808.8171390174658,
+            "inventaire_max_moyen": 11.079150579150578,
+            "inventaire_max_p95": 19.0,
+            "executions_moyennes": 797.3967181467182,
+            "decomposition_moyenne": {
+              "capture_spread": 137.5472266517545,
+              "inventaire_total": -358.86583011583105,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -0.7095559845559846,
+              "frais": -3.986983590733528
+            }
+          },
+          "AS skew plafonné": {
+            "sharpe_annualise": -16.993118318135714,
+            "sharpe_ic95": [
+              -18.8191141387866,
+              -15.307296333376126
+            ],
+            "sharpe_ic95_iid": [
+              -18.721134398205788,
+              -15.53039661452223
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -222.65682581100666,
+            "pnl_ecart_type": 207.99993660195253,
+            "proba_perte": 0.9324324324324325,
+            "cvar_5pct": -812.8583927895418,
+            "inventaire_max_moyen": 11.38127413127413,
+            "inventaire_max_p95": 19.0,
+            "executions_moyennes": 799.1148648648649,
+            "decomposition_moyenne": {
+              "capture_spread": 138.2475322971022,
+              "inventaire_total": -356.1972972972981,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -0.7114864864864865,
+              "frais": -3.995574324324261
+            }
+          },
+          "GLFT asymptotique": {
+            "sharpe_annualise": -20.85022765353449,
+            "sharpe_ic95": [
+              -23.061595696254276,
+              -18.6109051055812
+            ],
+            "sharpe_ic95_iid": [
+              -22.9435913575916,
+              -18.82103271222011
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -224.22591444176607,
+            "pnl_ecart_type": 170.71641143689675,
+            "proba_perte": 0.9652509652509652,
+            "cvar_5pct": -680.7687628034763,
+            "inventaire_max_moyen": 9.116795366795367,
+            "inventaire_max_p95": 13.0,
+            "executions_moyennes": 796.815637065637,
+            "decomposition_moyenne": {
+              "capture_spread": 137.3528548632539,
+              "inventaire_total": -357.27413127413195,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -0.32055984555984557,
+              "frais": -3.9840781853281233
+            }
+          },
+          "Placebo (cotes aléatoires)": {
+            "sharpe_annualise": -8.357539312524281,
+            "sharpe_ic95": [
+              -9.376897032147527,
+              -7.40420750876687
+            ],
+            "sharpe_ic95_iid": [
+              -9.267327852480172,
+              -7.425737222982319
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -212.99294651810212,
+            "pnl_ecart_type": 404.5638409286095,
+            "proba_perte": 0.7287644787644788,
+            "cvar_5pct": -1306.081219580108,
+            "inventaire_max_moyen": 16.85810810810811,
+            "inventaire_max_p95": 20.0,
+            "executions_moyennes": 790.6274131274131,
+            "decomposition_moyenne": {
+              "capture_spread": 132.32988166722677,
+              "inventaire_total": -340.3347490347498,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -1.034942084942085,
+              "frais": -3.9531370656370037
+            }
+          }
+        }
+      },
+      "probabiliste": {
+        "adverse": {
+          "Naïve symétrique": {
+            "sharpe_annualise": -10.932613937831777,
+            "sharpe_ic95": [
+              -12.03398667614976,
+              -9.987412219424149
+            ],
+            "sharpe_ic95_iid": [
+              -11.956264117051257,
+              -9.9593216082357
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -287.48641731016767,
+            "pnl_ecart_type": 417.4395454757027,
+            "proba_perte": 0.8223938223938224,
+            "cvar_5pct": -1461.55192307692,
+            "inventaire_max_moyen": 16.44111969111969,
+            "inventaire_max_p95": 20.0,
+            "executions_moyennes": 267.29633204633205,
+            "decomposition_moyenne": {
+              "capture_spread": 44.549388674388666,
+              "inventaire_total": -329.71602316602355,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -0.9833011583011584,
+              "frais": -1.3364816602316534
+            }
+          },
+          "Avellaneda-Stoikov": {
+            "sharpe_annualise": -14.557438157700934,
+            "sharpe_ic95": [
+              -16.10866984740911,
+              -13.219535161719163
+            ],
+            "sharpe_ic95_iid": [
+              -16.040149478819334,
+              -13.321189730175192
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -287.4337376061538,
+            "pnl_ecart_type": 313.4390185460131,
+            "proba_perte": 0.9333976833976834,
+            "cvar_5pct": -1220.2626403160773,
+            "inventaire_max_moyen": 13.008687258687258,
+            "inventaire_max_p95": 20.0,
+            "executions_moyennes": 267.39478764478764,
+            "decomposition_moyenne": {
+              "capture_spread": 45.601016254850805,
+              "inventaire_total": -330.9648648648656,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -0.7329150579150578,
+              "frais": -1.3369739382239316
+            }
+          },
+          "AS skew plafonné": {
+            "sharpe_annualise": -12.909670851659289,
+            "sharpe_ic95": [
+              -14.161029561002968,
+              -11.827838089887464
+            ],
+            "sharpe_ic95_iid": [
+              -14.080238129864682,
+              -11.833264098576004
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -288.0360148341996,
+            "pnl_ecart_type": 354.1864107790729,
+            "proba_perte": 0.9054054054054054,
+            "cvar_5pct": -1357.107566524715,
+            "inventaire_max_moyen": 14.00965250965251,
+            "inventaire_max_p95": 20.0,
+            "executions_moyennes": 267.511583011583,
+            "decomposition_moyenne": {
+              "capture_spread": 45.99497937429527,
+              "inventaire_total": -331.9183397683404,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -0.775096525096525,
+              "frais": -1.3375579150579084
+            }
+          },
+          "GLFT asymptotique": {
+            "sharpe_annualise": -14.980967241548024,
+            "sharpe_ic95": [
+              -16.52030875567916,
+              -13.674338426686012
+            ],
+            "sharpe_ic95_iid": [
+              -16.39607900168429,
+              -13.78291078021448
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -288.42714102492147,
+            "pnl_ecart_type": 305.6303939028347,
+            "proba_perte": 0.9353281853281853,
+            "cvar_5pct": -1215.5905293695714,
+            "inventaire_max_moyen": 12.444015444015443,
+            "inventaire_max_p95": 20.0,
+            "executions_moyennes": 267.3918918918919,
+            "decomposition_moyenne": {
+              "capture_spread": 45.48066785538838,
+              "inventaire_total": -332.03069498069596,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -0.54015444015444,
+              "frais": -1.336959459459453
+            }
+          },
+          "Placebo (cotes aléatoires)": {
+            "sharpe_annualise": -10.559948030510222,
+            "sharpe_ic95": [
+              -11.681513126486623,
+              -9.538270638711861
+            ],
+            "sharpe_ic95_iid": [
+              -11.613862858563888,
+              -9.503941222345262
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -278.70877276566415,
+            "pnl_ecart_type": 418.9759829230886,
+            "proba_perte": 0.8194980694980695,
+            "cvar_5pct": -1470.3880568729135,
+            "inventaire_max_moyen": 16.344594594594593,
+            "inventaire_max_p95": 20.0,
+            "executions_moyennes": 266.2567567567568,
+            "decomposition_moyenne": {
+              "capture_spread": 45.29461526522432,
+              "inventaire_total": -321.7114864864869,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -0.9606177606177605,
+              "frais": -1.3312837837837772
+            }
+          }
+        },
+        "deux_cotes": {
+          "Naïve symétrique": {
+            "sharpe_annualise": -3.3541511507116293,
+            "sharpe_ic95": [
+              -4.421187914013181,
+              -2.439127934569408
+            ],
+            "sharpe_ic95_iid": [
+              -4.290156536656106,
+              -2.402948371269799
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -88.7259443371952,
+            "pnl_ecart_type": 419.9216547037959,
+            "proba_perte": 0.5974903474903475,
+            "cvar_5pct": -1156.574198717945,
+            "inventaire_max_moyen": 16.95849420849421,
+            "inventaire_max_p95": 20.0,
+            "executions_moyennes": 401.86196911196913,
+            "decomposition_moyenne": {
+              "capture_spread": 66.97699485199485,
+              "inventaire_total": -152.68445945946033,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -1.0091698841698842,
+              "frais": -2.009309845559825
+            }
+          },
+          "Avellaneda-Stoikov": {
+            "sharpe_annualise": -6.601220508692522,
+            "sharpe_ic95": [
+              -8.06863860975899,
+              -5.428917652296831
+            ],
+            "sharpe_ic95_iid": [
+              -7.7163442160627564,
+              -5.630918895831528
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -110.04824797680898,
+            "pnl_ecart_type": 264.64223939945845,
+            "proba_perte": 0.7297297297297297,
+            "cvar_5pct": -810.0554245949835,
+            "inventaire_max_moyen": 12.576254826254827,
+            "inventaire_max_p95": 20.0,
+            "executions_moyennes": 398.6457528957529,
+            "decomposition_moyenne": {
+              "capture_spread": 68.35820472589491,
+              "inventaire_total": -175.6803088803101,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -0.7329150579150578,
+              "frais": -1.9932287644787439
+            }
+          },
+          "AS skew plafonné": {
+            "sharpe_annualise": -5.8319983615780515,
+            "sharpe_ic95": [
+              -7.200004777452991,
+              -4.729773782793092
+            ],
+            "sharpe_ic95_iid": [
+              -6.911704748480802,
+              -4.86705070185258
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -106.40992332828624,
+            "pnl_ecart_type": 289.6443140425543,
+            "proba_perte": 0.7036679536679536,
+            "cvar_5pct": -863.3394405625817,
+            "inventaire_max_moyen": 13.277027027027026,
+            "inventaire_max_p95": 20.0,
+            "executions_moyennes": 400.1138996138996,
+            "decomposition_moyenne": {
+              "capture_spread": 68.96583921997735,
+              "inventaire_total": -172.63098455598563,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -0.7442084942084943,
+              "frais": -2.0005694980694777
+            }
+          },
+          "GLFT asymptotique": {
+            "sharpe_annualise": -7.11035359547065,
+            "sharpe_ic95": [
+              -8.793128722936133,
+              -5.7299685008832375
+            ],
+            "sharpe_ic95_iid": [
+              -8.351035621853635,
+              -6.075244456694238
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -112.72412880620627,
+            "pnl_ecart_type": 251.66681873679127,
+            "proba_perte": 0.7432432432432432,
+            "cvar_5pct": -779.5455513872724,
+            "inventaire_max_moyen": 11.47972972972973,
+            "inventaire_max_p95": 18.0,
+            "executions_moyennes": 398.5482625482625,
+            "decomposition_moyenne": {
+              "capture_spread": 68.20461636753993,
+              "inventaire_total": -178.49971042471145,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -0.43629343629343637,
+              "frais": -1.992741312741292
+            }
+          },
+          "Placebo (cotes aléatoires)": {
+            "sharpe_annualise": -3.5926596968260145,
+            "sharpe_ic95": [
+              -4.708070922139393,
+              -2.634860329695052
+            ],
+            "sharpe_ic95_iid": [
+              -4.541860960225895,
+              -2.6526853498174723
+            ],
+            "bloc_jours": 10,
+            "pnl_moyen_pips_lot": -94.78380545322513,
+            "pnl_ecart_type": 418.8112407647932,
+            "proba_perte": 0.5916988416988417,
+            "cvar_5pct": -1165.6816052654644,
+            "inventaire_max_moyen": 16.784749034749034,
+            "inventaire_max_p95": 20.0,
+            "executions_moyennes": 394.7316602316602,
+            "decomposition_moyenne": {
+              "capture_spread": 66.00780651588778,
+              "inventaire_total": -157.8306949806959,
+              "dont_selection_adverse": 0.0,
+              "cout_liquidation": -0.9872586872586873,
+              "frais": -1.973658301158281
+            }
+          }
+        }
+      }
+    },
+    "markout_par_execution_pips (modele de base)": {
+      "adverse": {
+        "Naïve symétrique": {
+          "1min": {
+            "moyenne_pips": -1.0952395767762382,
+            "erreur_standard": 0.004479582104145115,
+            "n_executions": 276418
+          },
+          "5min": {
+            "moyenne_pips": -1.071850213146443,
+            "erreur_standard": 0.008395025331938928,
+            "n_executions": 274381
+          },
+          "15min": {
+            "moyenne_pips": -1.0693292501856002,
+            "erreur_standard": 0.014035153172702472,
+            "n_executions": 269400
+          }
+        },
+        "Avellaneda-Stoikov": {
+          "1min": {
+            "moyenne_pips": -1.0979743661266093,
+            "erreur_standard": 0.004475872787056785,
+            "n_executions": 276512
+          },
+          "5min": {
+            "moyenne_pips": -1.076578096291023,
+            "erreur_standard": 0.008399078857850416,
+            "n_executions": 274456
+          },
+          "15min": {
+            "moyenne_pips": -1.074064807652981,
+            "erreur_standard": 0.014041039136784539,
+            "n_executions": 269436
+          }
+        },
+        "AS skew plafonné": {
+          "1min": {
+            "moyenne_pips": -1.094388642338067,
+            "erreur_standard": 0.004474714345589206,
+            "n_executions": 276635
+          },
+          "5min": {
+            "moyenne_pips": -1.071626255050282,
+            "erreur_standard": 0.008391811686831742,
+            "n_executions": 274580
+          },
+          "15min": {
+            "moyenne_pips": -1.0684991682757174,
+            "erreur_standard": 0.014031070282965116,
+            "n_executions": 269563
+          }
+        },
+        "GLFT asymptotique": {
+          "1min": {
+            "moyenne_pips": -1.0989342712678702,
+            "erreur_standard": 0.00447489437215379,
+            "n_executions": 276505
+          },
+          "5min": {
+            "moyenne_pips": -1.076297756738749,
+            "erreur_standard": 0.008396568154171355,
+            "n_executions": 274473
+          },
+          "15min": {
+            "moyenne_pips": -1.0725580096364435,
+            "erreur_standard": 0.014040644793023289,
+            "n_executions": 269472
+          }
+        },
+        "Placebo (cotes aléatoires)": {
+          "1min": {
+            "moyenne_pips": -1.092921065279309,
+            "erreur_standard": 0.004495522558137863,
+            "n_executions": 275343
+          },
+          "5min": {
+            "moyenne_pips": -1.0697345796853137,
+            "erreur_standard": 0.008428391078992303,
+            "n_executions": 273311
+          },
+          "15min": {
+            "moyenne_pips": -1.0700781177726166,
+            "erreur_standard": 0.014083843499269843,
+            "n_executions": 268357
+          }
+        }
+      },
+      "deux_cotes": {
+        "Naïve symétrique": {
+          "1min": {
+            "moyenne_pips": -0.2671421387098266,
+            "erreur_standard": 0.004144538510105771,
+            "n_executions": 415587
+          },
+          "5min": {
+            "moyenne_pips": -0.2638584271823193,
+            "erreur_standard": 0.007275204875241459,
+            "n_executions": 412631
+          },
+          "15min": {
+            "moyenne_pips": -0.2712958897576952,
+            "erreur_standard": 0.01193547344586725,
+            "n_executions": 405410
+          }
+        },
+        "Avellaneda-Stoikov": {
+          "1min": {
+            "moyenne_pips": -0.2802248984949594,
+            "erreur_standard": 0.004172374805614468,
+            "n_executions": 412250
+          },
+          "5min": {
+            "moyenne_pips": -0.2779176412124461,
+            "erreur_standard": 0.007332527993817551,
+            "n_executions": 409259
+          },
+          "15min": {
+            "moyenne_pips": -0.2846145473683027,
+            "erreur_standard": 0.012028304444017859,
+            "n_executions": 401928
+          }
+        },
+        "AS skew plafonné": {
+          "1min": {
+            "moyenne_pips": -0.2749768536958476,
+            "erreur_standard": 0.004161738680705616,
+            "n_executions": 413770
+          },
+          "5min": {
+            "moyenne_pips": -0.2732267188232886,
+            "erreur_standard": 0.007313655007898971,
+            "n_executions": 410780
+          },
+          "15min": {
+            "moyenne_pips": -0.28019556991751987,
+            "erreur_standard": 0.011991229117154877,
+            "n_executions": 403451
+          }
+        },
+        "GLFT asymptotique": {
+          "1min": {
+            "moyenne_pips": -0.2820272686796221,
+            "erreur_standard": 0.004163722351134481,
+            "n_executions": 412162
+          },
+          "5min": {
+            "moyenne_pips": -0.27837961413188494,
+            "erreur_standard": 0.007330194049863843,
+            "n_executions": 409212
+          },
+          "15min": {
+            "moyenne_pips": -0.2856352979157484,
+            "erreur_standard": 0.012017338620745164,
+            "n_executions": 401999
+          }
+        },
+        "Placebo (cotes aléatoires)": {
+          "1min": {
+            "moyenne_pips": -0.2853087395519616,
+            "erreur_standard": 0.004188329837680566,
+            "n_executions": 408227
+          },
+          "5min": {
+            "moyenne_pips": -0.2821556504937682,
+            "erreur_standard": 0.007366001063626969,
+            "n_executions": 405310
+          },
+          "15min": {
+            "moyenne_pips": -0.2881355532580654,
+            "erreur_standard": 0.012072790284016402,
+            "n_executions": 398205
+          }
+        }
+      }
+    },
+    "placebo": {
+      "graines": 30,
+      "strategie_de_reference": "Avellaneda-Stoikov",
+      "adverse": {
+        "sharpe_ref_moyen": -14.670129989960826,
+        "sharpe_placebo_moyen": -10.630107226078477,
+        "sharpe_placebo_p5_p95": [
+          -11.182179773205148,
+          -9.974730182389301
+        ],
+        "part_graines_ou_ref_bat_placebo_en_sharpe": 0.0,
+        "pnl_moyen_jour_ref": -287.84908756806095,
+        "pnl_moyen_jour_placebo": -278.8204619360944,
+        "part_graines_ou_ref_bat_placebo_en_pnl_moyen": 0.13333333333333333
+      },
+      "deux_cotes": {
+        "sharpe_ref_moyen": -6.986879729222915,
+        "sharpe_placebo_moyen": -4.122088488331543,
+        "sharpe_placebo_p5_p95": [
+          -4.822126374384956,
+          -3.3546263474343743
+        ],
+        "part_graines_ou_ref_bat_placebo_en_sharpe": 0.0,
+        "pnl_moyen_jour_ref": -114.0067696075067,
+        "pnl_moyen_jour_placebo": -106.24817381186449,
+        "part_graines_ou_ref_bat_placebo_en_pnl_moyen": 0.2
+      }
+    },
+    "sensibilite_f_seuil": {
+      "f": [
+        0.25,
+        0.5,
+        0.75,
+        1.0
+      ],
+      "seuil_pips": [
+        -0.1,
+        0.0,
+        0.1,
+        0.3
+      ],
+      "strategies": [
+        "Naïve symétrique",
+        "Avellaneda-Stoikov",
+        "AS skew plafonné",
+        "GLFT asymptotique",
+        "Placebo (cotes aléatoires)"
+      ],
+      "sharpe": [
+        [
+          [
+            -7.254421699883986,
+            -9.112452335093254,
+            -8.116286175709542,
+            -9.368921671972108,
+            -7.041764832551313
+          ],
+          [
+            -11.194128100575938,
+            -14.600494345234523,
+            -12.757931211840527,
+            -14.880665499503005,
+            -10.695350244107903
+          ],
+          [
+            -14.753450969665725,
+            -18.88965623418831,
+            -16.555158422498806,
+            -19.117447616140304,
+            -14.125275749887109
+          ],
+          [
+            -17.79387105206419,
+            -22.860923782679254,
+            -20.278208334133268,
+            -23.16244350237688,
+            -17.595645285782343
+          ]
+        ],
+        [
+          [
+            -7.24907132375261,
+            -9.162662629719355,
+            -8.190602869699083,
+            -9.34584851206391,
+            -6.93735960958272
+          ],
+          [
+            -11.15885666558055,
+            -14.61982998398921,
+            -12.82923768621762,
+            -15.024932261902576,
+            -10.645744934194477
+          ],
+          [
+            -14.745716012060084,
+            -19.058672289879578,
+            -16.642083968885604,
+            -19.24251329581634,
+            -14.040817152711082
+          ],
+          [
+            -17.825351660579802,
+            -22.755875998730033,
+            -20.420630893811694,
+            -23.162264027802582,
+            -17.37811386745275
+          ]
+        ],
+        [
+          [
+            -7.186365835921033,
+            -9.24969991087927,
+            -8.349017242439363,
+            -9.326296848870122,
+            -7.014816208497469
+          ],
+          [
+            -10.932613937831777,
+            -14.557438157700934,
+            -12.909670851659289,
+            -14.980967241548024,
+            -10.559948030510222
+          ],
+          [
+            -14.417807397575384,
+            -18.855862365156973,
+            -16.493873799352986,
+            -19.273951972322426,
+            -14.114825585592738
+          ],
+          [
+            -17.604042502861134,
+            -22.40811811822699,
+            -20.355264676080083,
+            -22.903799833658077,
+            -17.546687053498466
+          ]
+        ],
+        [
+          [
+            -6.695744018405164,
+            -8.785486249075225,
+            -8.087958265898486,
+            -8.909562840775779,
+            -6.747579139634201
+          ],
+          [
+            -10.504751990131266,
+            -14.560012160098555,
+            -13.107222795281972,
+            -14.981185521556274,
+            -10.316991762230685
+          ],
+          [
+            -14.03352578948736,
+            -18.441613659422643,
+            -16.863684098703747,
+            -18.92945875089125,
+            -13.641428834623419
+          ],
+          [
+            -17.43655048572351,
+            -22.1005366208435,
+            -20.536044089274906,
+            -22.64684220791043,
+            -17.347754628999358
+          ]
+        ]
+      ]
+    },
+    "controle_marche_aleatoire": {
+      "description": "même rejeu (modèle de base) sur des journées de marche aléatoire sans dérive ni sélection adverse",
+      "sigma_minute_pips": 1.8905485330393113,
+      "n_jours": 400,
+      "pas_sous_minute_s": 1,
+      "resultats": {
+        "adverse": {
+          "Naïve symétrique": {
+            "pnl_moyen_jour_marche_aleatoire": -359.29618741667684,
+            "markout_1min_marche_aleatoire": -1.3310551241193318,
+            "pnl_moyen_jour_reel": -287.48641731016767,
+            "markout_1min_reel": -1.0952395767762382
+          },
+          "Avellaneda-Stoikov": {
+            "pnl_moyen_jour_marche_aleatoire": -361.212993957063,
+            "markout_1min_marche_aleatoire": -1.3325908204062953,
+            "pnl_moyen_jour_reel": -287.4337376061538,
+            "markout_1min_reel": -1.0979743661266093
+          }
+        },
+        "deux_cotes": {
+          "Naïve symétrique": {
+            "pnl_moyen_jour_marche_aleatoire": -97.34599888233281,
+            "markout_1min_marche_aleatoire": -0.24338248147840924,
+            "pnl_moyen_jour_reel": -88.7259443371952,
+            "markout_1min_reel": -0.2671421387098266
+          },
+          "Avellaneda-Stoikov": {
+            "pnl_moyen_jour_marche_aleatoire": -106.29049396337508,
+            "markout_1min_marche_aleatoire": -0.24520352174261578,
+            "pnl_moyen_jour_reel": -110.04824797680898,
+            "markout_1min_reel": -0.2802248984949594
+          }
+        }
+      }
+    }
+  }
+}

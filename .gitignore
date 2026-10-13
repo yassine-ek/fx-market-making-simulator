@@ -1,0 +1,13 @@
+__pycache__/
+.pytest_cache/
+.ipynb_checkpoints/
+.venv/
+*.pyc
+*.nbi
+*.nbc
+.DS_Store
+# données de marché locales (HISTDATA_DIR, défaut ./data/histdata) : jamais versionnées
+data/histdata/
+# un essai `run_all.py --rapide` n'écrase jamais les vrais résultats : il écrit ici
+results/_rapide/
+figures/_rapide/
