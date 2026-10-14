@@ -136,7 +136,6 @@ def test_readme_court_avec_premier_ecran_complet():
     assert "## Résultats clés" in tete and "figures/hero_equity.png" in tete
     assert "actions/workflows/tests.yml/badge.svg" in tete, "badge CI vivant attendu"
     assert "tests-" not in tete, "plus de badge statique de nombre de tests"
-    assert "## Comment ce projet a été construit" in lignes
     assert (RACINE / ".gitattributes").is_file()
 
 

@@ -198,10 +198,6 @@ Métiers visés : market making, exécution, plateformes de trading FX. Le dép�
 
 </details>
 
-## Comment ce projet a été construit
-
-Projet réalisé en octobre 2026 avec un assistant de programmation IA (Claude, Anthropic) que j'ai dirigé : choix des sujets, protocole, vérification des résultats. Tous les chiffres sont régénérés par les scripts du dépôt et contrôlés par les tests et la CI.
-
 ## Reproduire
 
 ```bash
